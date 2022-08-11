@@ -1,18 +1,17 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { getPostListings } from "~/models/post.server";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { getPosts } from "~/models/post.server";
 
 type LoaderData = {
-  posts: Awaited<ReturnType<typeof getPosts>>;
+  posts: Awaited<ReturnType<typeof getPostListings>>;
 };
 
 export const loader: LoaderFunction = async () => {
-  const posts = await getPosts();
-  return json<LoaderData>({ posts });
+  return json<LoaderData>({ posts: await getPostListings() });
 };
 
-export default function PostsRoute() {
+export default function AdminRoute() {
   const { posts } = useLoaderData() as unknown as LoaderData;
   return (
     <main>
@@ -23,6 +22,9 @@ export default function PostsRoute() {
           <Link to={post.slug}>{post.title}</Link>
         </li>
       ))}
+      <div>
+        <Outlet />
+      </div>
     </main>
   );
 }
