@@ -1,22 +1,43 @@
-import { Form } from "@remix-run/react";
+import { Form, useActionData } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { createPost } from "~/models/post.server";
+import { json } from "@remix-run/node";
+import invariant from "tiny-invariant";
+
+type ActionData =
+  | { title: null | string; slug?: null | string; markdown?: null | string }
+  | undefined;
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const title = formData.get("title");
 
-  await createPost({ title });
+  const errors = {
+    title: title ? null : "Title is required",
+  };
+  const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
+
+  if (hasErrors) {
+    return json<ActionData>(errors);
+  }
+
+  invariant(typeof title === "string", "Title must be a string");
+
+  await createPost({ title, markdown: "HELLLLO", slug: "new-post" });
+
   return redirect("/posts/admin");
 };
 
 export default function NewPostRoute() {
+  const errors = useActionData() as ActionData;
+
   return (
     <Form method="post">
       <p>
         <label>
-          Post Title: <input type="text" name="title" />
+          Post Title: {errors?.title ? <em>{errors.title}</em> : null}
+          <input type="text" name="title" />
         </label>
       </p>
       <button type="submit">Post</button>
