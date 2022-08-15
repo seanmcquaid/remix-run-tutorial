@@ -63,7 +63,7 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="mx-auto mt-16 max-w-7x1 text-center">
+        <div className="max-w-7x1 mx-auto mt-16 text-center">
           <Link to="/posts" className="text-xl text-blue-600 underline">
             Blog Posts
           </Link>
@@ -141,4 +141,8 @@ export default function Index() {
       </div>
     </main>
   );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <div>Unexpected error: {error.message}</div>;
 }

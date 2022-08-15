@@ -39,3 +39,7 @@ export function CatchBoundary() {
   }
   throw new Error(`Unsupported thrown response status code`);
 }
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <div>Unexpected error: {error.message}</div>;
+}
