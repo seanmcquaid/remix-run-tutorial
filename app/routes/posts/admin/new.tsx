@@ -1,4 +1,4 @@
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useTransition } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { createPost } from "~/models/post.server";
@@ -31,6 +31,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewPostRoute() {
   const errors = useActionData() as ActionData;
+  const transition = useTransition();
+  const isCreating = Boolean(transition.submission);
 
   return (
     <Form method="post">
@@ -40,7 +42,9 @@ export default function NewPostRoute() {
           <input type="text" name="title" />
         </label>
       </p>
-      <button type="submit">Post</button>
+      <button type="submit" disabled={isCreating}>
+        {isCreating ? "Creating..." : "Add Post"}
+      </button>
     </Form>
   );
 }
